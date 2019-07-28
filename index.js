@@ -13,12 +13,30 @@ http.createServer((request, response)=>{
     else file = request.url.slice(1, request.url.length);
     fs.readFile(file, function(error,content){
         if (error){
-        response.writeHead(500);
-        response.end('Error ' + error.code + '\n');
-        } else {
-        response.writeHead(200, {'Content-Type': 'text/html'})
-        response.end(content, 'utf-8'); 
+            if (error='ENOENT'){
+                let r;
+                if (request.url[0] == '/') r = request.url.substring(1, request.length);
+                if (r.split('/')[0]=='api') {
+                    console.log("api request");
+                }
+                else {
+                    console.log("404");
+                    fs.readFile('/404.html', function(error,content){
+                        response.writeHead('200', {'Content-Type':'text/html'});
+                        response.end(content, 'utf-8')
+                    });
+                }
+            }
+            else {
+                console.log("error 500");
+                response.writeHead(500);
+                response.end('Error ' + error.code + '\n');
+            }
+        }
+        else {
+            console.log("200");
+            response.writeHead(200, {'Content-Type': 'text/html'})
+            response.end(content, 'utf-8'); 
         }
     });
-
 }).listen(port,ip);
