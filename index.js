@@ -12,8 +12,13 @@ http.createServer((request, response)=>{
     if (request.url === '/') file = 'index.html'
     else file = request.url.slice(1, request.url.length);
     fs.readFile(file, function(error,content){
+        if (error){
+        response.writeHead(500);
+        response.end('Error ' + error.code + '\n');
+        } else {
         response.writeHead(200, {'Content-Type': 'text/html'})
         response.end(content, 'utf-8'); 
+        }
     });
 
 }).listen(port,ip);
