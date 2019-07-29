@@ -1,6 +1,7 @@
 const http = require('http');
 const fs = require('fs');
 const fetch = require('node-fetch');
+const {API} = require('./api');
 
 
 const ip = '127.0.0.1';
@@ -15,10 +16,11 @@ http.createServer((request, response)=>{
     fs.readFile(file, function(error,content){
         if (error){
             if (error='ENOENT'){
-                let r;
-                if (request.url[0] == '/') r = request.url.substring(1, request.length);
-                if (r.split('/')[0]=='api') {
+                let req;
+                if (request.url[0] == '/') req = request.url.substring(1, request.length);
+                if (req.split('/')[0]=='api') {
                     console.log("api request");
+                    API.exec(request, response);
                 }
                 else {
                     fs.readFile('404.html', function(error,content){
@@ -41,4 +43,7 @@ http.createServer((request, response)=>{
     });
 }).listen(port,ip);
 
-fetch('http://127.0.0.1:3000/huhukj')
+fetch('http://127.0.0.1:3000/api/lol').then(promise=>{
+    console.log("return object: ", promise);
+    console.log(".json(): ", promise.json())
+});
