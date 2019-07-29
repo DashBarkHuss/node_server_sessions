@@ -1,5 +1,6 @@
 const http = require('http');
 const fs = require('fs');
+const fetch = require('node-fetch');
 
 
 const ip = '127.0.0.1';
@@ -20,8 +21,7 @@ http.createServer((request, response)=>{
                     console.log("api request");
                 }
                 else {
-                    console.log("404");
-                    fs.readFile('/404.html', function(error,content){
+                    fs.readFile('404.html', function(error,content){
                         response.writeHead('200', {'Content-Type':'text/html'});
                         response.end(content, 'utf-8')
                     });
@@ -40,3 +40,5 @@ http.createServer((request, response)=>{
         }
     });
 }).listen(port,ip);
+
+fetch('http://127.0.0.1:3000/huhukj')
