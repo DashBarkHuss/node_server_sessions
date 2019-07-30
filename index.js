@@ -40,9 +40,6 @@ http.createServer((request, response)=>{
     });
 }).listen(port,ip);
 
-fetch('http://127.0.0.1:3000/api/lol').then(promise=>{
-    console.log("response: ", promise);
-    const json = promise.json();
-    console.log(".json(): ", json)
-    return json;
-});
+fetch('http://127.0.0.1:3000/api/user/login')
+.then(promise=>promise.json())
+.then(content=> console.log("content:",content));
