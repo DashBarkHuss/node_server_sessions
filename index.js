@@ -16,15 +16,12 @@ http.createServer((request, response)=>{
     fs.readFile(file, function(error,content){
         if (error){
             if (error='ENOENT'){
-                let req;
-                if (request.url[0] == '/') req = request.url.substring(1, request.length);
-                if (req.split('/')[0]=='api') {
-                    console.log("api request");
+                if (API.catchAPIRequest(request.url)){
                     API.exec(request, response);
                 }
                 else {
                     fs.readFile('404.html', function(error,content){
-                        response.writeHead('200', {'Content-Type':'text/html'});
+                        response.writeHead('404', {'Content-Type':'text/html'});
                         response.end(content, 'utf-8')
                     });
                 }
