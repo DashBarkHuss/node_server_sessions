@@ -11,5 +11,12 @@
     <input type="text" id = "user"></input>
     <input type="password" id = "password"></input>
     <input type="button" value="Login"></input>
+    <br><br>
+    <input type="button" value="fetch test" onclick="fetch('http://127.0.0.1:3000/api/someEndPoint').then(promise=>{
+        console.log('response: ', promise);
+        const json = promise.json();
+        console.log('.json(): ', json)
+        return json;
+    });" ></input>
 </body>
 </html>

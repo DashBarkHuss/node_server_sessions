@@ -4,7 +4,6 @@ class API {
     static exec(request, response) {
         request.chunks = [];
         request.on('data', (segment)=>request.chunks.push(segment));
-        console.log("chunks: ", request.chunks)
         request.on('end', ()=>{
 
                 const jsontype = "{ 'Content-Type': 'application/json' }";

@@ -44,6 +44,8 @@ http.createServer((request, response)=>{
 }).listen(port,ip);
 
 fetch('http://127.0.0.1:3000/api/lol').then(promise=>{
-    console.log("return object: ", promise);
-    console.log(".json(): ", promise.json())
+    console.log("response: ", promise);
+    const json = promise.json();
+    console.log(".json(): ", json)
+    return json;
 });
