@@ -23,14 +23,17 @@ class API {
     constructor(){};
 
     static exec(request, response) {
-        request.on('data', ()=>{});
+        request.chunks = [];
+        request.on('data', segment => {
+                request.chunks.push(segment);
+        });
         request.on('end', ()=>{
             console.log("API.parts: ", API.parts);
-
+            const payload = JSON.parse(Buffer.concat(request.chunks).toString());
+            console.log('payload: ', payload);
             if (identify('user', 'login')){
-                action_user_login(request, "placeholder")
+                action_user_login(request, payload )
                 .then(content=>{
-                    console.log("resp: ");
                     respond(response, content)});
             }
         });

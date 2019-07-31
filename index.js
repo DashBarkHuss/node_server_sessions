@@ -40,6 +40,9 @@ http.createServer((request, response)=>{
     });
 }).listen(port,ip);
 
-fetch('http://127.0.0.1:3000/api/user/login')
+fetch('http://127.0.0.1:3000/api/user/login', 
+{ method: 'post', 
+headers: {'Accept':'application/json'}, 
+body: JSON.stringify({user: 'boobface'})})
 .then(promise=>promise.json()
 ).then(content=> console.log("content:",content));
