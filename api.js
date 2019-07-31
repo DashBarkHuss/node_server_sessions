@@ -1,3 +1,21 @@
+const mysql = require('mysql');
+class database {
+    constructor(){};
+
+    static create(){
+        let message = "Creating MySQL connection...";
+        this.connection = mysql.createConnection({
+            host: process.env.HOST,
+            user: process.env.DBUSER,
+            password: process.env.PASSWORD,
+            database: process.env.DATABASE
+        });
+        this.connection.connect();
+        console.log(message + 'ok.');
+
+    }
+
+}
 function action_user_login(request, payload){
     console.log("login");
     return new Promise((resolve, reject)=>{
@@ -50,5 +68,5 @@ class API {
 }
 
 API.parts = null;
-module.exports = {API};
+module.exports = {API, database};
 

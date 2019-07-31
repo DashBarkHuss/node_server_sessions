@@ -1,11 +1,13 @@
 const http = require('http');
 const fs = require('fs');
 const fetch = require('node-fetch');
-const {API} = require('./api');
+const {API, database} = require('./api');
 
 
 const ip = '127.0.0.1';
 const port = 3000;
+
+database.create();
 
 
 http.createServer((request, response)=>{
