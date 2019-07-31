@@ -1,9 +1,16 @@
-function action_user_login(){
+function action_user_login(request, payload){
     console.log("login");
+    return new Promise((resolve, reject)=>{
+        if (!payload){
+            reject("Oops no payload")
+        };
+        resolve({"success": true}); 
+    }).catch((error) => { console.log("err:", error) });
 }
 function respond(response, content){
     const jsontype = "{ 'Content-Type': 'application/json' }";
     content = JSON.stringify(content);
+    console.log("cont:", content);
     response.writeHead(200, jsontype);
     response.end(content, 'utf-8');
 }
@@ -21,9 +28,11 @@ class API {
             console.log("API.parts: ", API.parts);
 
             if (identify('user', 'login')){
-                action_user_login();
-            };
-            respond(response, {success: true});
+                action_user_login(request, "placeholder")
+                .then(content=>{
+                    console.log("resp: ");
+                    respond(response, content)});
+            }
         });
     };
     static catchAPIRequest(url){
