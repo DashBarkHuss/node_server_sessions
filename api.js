@@ -17,13 +17,17 @@ class database {
 
 }
 function action_user_login(request, payload){
-    console.log("login");
     return new Promise((resolve, reject)=>{
         if (!payload){
             reject("Oops no payload")
         };
-        database.connection.query(()=>{        
-    resolve({"success": true});
+        const q = `select * from user where username = '${payload.username}'`
+        database.connection.query(q, (error, results)=>{
+            if (error) throw error; 
+            if (results.length != 0){
+            console.log("results: ", results)
+            resolve({"success": true});
+            }
          }) 
     }).catch((error) => { console.log("err:", error) });
 }
@@ -50,7 +54,7 @@ class API {
         request.on('end', ()=>{
             console.log("API.parts: ", API.parts);
             const payload = JSON.parse(Buffer.concat(request.chunks).toString());
-            console.log('payload: ', payload);
+            console.log('58 payload: ', payload);
             if (identify('user', 'login')){
                 action_user_login(request, payload )
                 .then(content=>{
@@ -62,7 +66,6 @@ class API {
         console.log("url:",url);
         if (url[0] === '/') url = url.substring(1, url.length);
         if (url.split('/')[0]=='api'){
-            console.log('api request');
             API.parts = url.split('/');
             return true;
         }
