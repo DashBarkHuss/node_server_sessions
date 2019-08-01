@@ -1,4 +1,6 @@
 const mysql = require('mysql');
+const md5 = require('md5');
+
 class database {
     constructor(){};
 
@@ -16,6 +18,32 @@ class database {
     }
 
 }
+
+function action_user_register(request, payload){
+    return new Promise((resolve, reject)=>{
+        if (!payload){
+            reject('Oops no payload')
+        };
+        let q = `select * from user where username = '${payload.username}'`;
+        database.connection.query(q, (error, results)=>{
+            if (error) throw error;
+            if (results.length !=0){
+            resolve({'success':false, 'message': 'user ' + payload.username + " already exists"});
+            } else {
+                const password_md5 = md5(payload.password);
+                const fields = `(username, password_md5)`;
+                const values = `('${payload.username}', '${password_md5}')`;
+                q = `insert into user ${fields} values ${values}`
+                console.log(37, q);
+                database.connection.query(q, (error, results)=>{
+                    if (error) throw error;
+                    resolve({'success': true, 'message': `user "${payload.username}" registered.`})
+                })
+
+            }
+        })
+    })
+}
 function action_user_login(request, payload){
     return new Promise((resolve, reject)=>{
         if (!payload){
@@ -25,8 +53,8 @@ function action_user_login(request, payload){
         database.connection.query(q, (error, results)=>{
             if (error) throw error; 
             if (results.length != 0){
-            console.log("results: ", results)
-            resolve({"success": true});
+                console.log("results: ", results)
+                resolve({"success": true});
             }
          }) 
     }).catch((error) => { console.log("err:", error) });
@@ -34,7 +62,6 @@ function action_user_login(request, payload){
 function respond(response, content){
     const jsontype = "{ 'Content-Type': 'application/json' }";
     content = JSON.stringify(content);
-    console.log("cont:", content);
     response.writeHead(200, jsontype);
     response.end(content, 'utf-8');
 }
@@ -59,6 +86,12 @@ class API {
                 action_user_login(request, payload )
                 .then(content=>{
                     respond(response, content)});
+            }
+            if (identify('user', 'register')){
+                action_user_register(request, payload)
+                .then(content => {
+                    respond(response, content)
+                });
             }
         });
     };
