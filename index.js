@@ -42,9 +42,9 @@ http.createServer((request, response)=>{
     });
 }).listen(port,ip);
 
-fetch('http://127.0.0.1:3000/api/user/register', 
+fetch('http://127.0.0.1:3000/api/user/login', 
 { method: 'post', 
 headers: {'Accept':'application/json'}, 
-body: JSON.stringify({username: 'butt', password: 'munch'})})
+body: JSON.stringify({username: 'boop', password: 'password'})})
 .then(promise=>promise.json()
 ).then(content=> console.log("content:",content));

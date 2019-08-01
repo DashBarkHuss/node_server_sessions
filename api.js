@@ -37,13 +37,13 @@ function action_user_register(request, payload){
                 console.log(37, q);
                 database.connection.query(q, (error, results)=>{
                     if (error) throw error;
-                    resolve({'success': true, 'message': `user "${payload.username}" registered.`})
-                })
-
-            }
-        })
-    })
-}
+                    
+                    resolve({'success': true, 'message': `user "${payload.username}" registered.`});
+                });
+            };
+        });
+    });
+};
 function action_user_login(request, payload){
     return new Promise((resolve, reject)=>{
         if (!payload){
@@ -53,12 +53,16 @@ function action_user_login(request, payload){
         database.connection.query(q, (error, results)=>{
             if (error) throw error; 
             if (results.length != 0){
-                console.log("results: ", results)
-                resolve({"success": true});
-            }
-         }) 
+                console.log("password: ", payload.password);
+                if (md5(payload.password) == results[0].password_md5){
+                    resolve({"success": true, 'message': `user "${results[0].username}" logged in`});
+                } else {
+                    resolve({'success':false, 'message': `incorrect password or username.`});
+                }
+            };
+        });
     }).catch((error) => { console.log("err:", error) });
-}
+};
 function respond(response, content){
     const jsontype = "{ 'Content-Type': 'application/json' }";
     content = JSON.stringify(content);
@@ -81,7 +85,6 @@ class API {
         request.on('end', ()=>{
             console.log("API.parts: ", API.parts);
             const payload = JSON.parse(Buffer.concat(request.chunks).toString());
-            console.log('58 payload: ', payload);
             if (identify('user', 'login')){
                 action_user_login(request, payload )
                 .then(content=>{
