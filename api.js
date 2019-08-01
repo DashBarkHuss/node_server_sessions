@@ -22,7 +22,9 @@ function action_user_login(request, payload){
         if (!payload){
             reject("Oops no payload")
         };
-        resolve({"success": true}); 
+        database.connection.query(()=>{        
+    resolve({"success": true});
+         }) 
     }).catch((error) => { console.log("err:", error) });
 }
 function respond(response, content){
@@ -59,7 +61,8 @@ class API {
     static catchAPIRequest(url){
         console.log("url:",url);
         if (url[0] === '/') url = url.substring(1, url.length);
-        if (url.split('/')[0]='api'){
+        if (url.split('/')[0]=='api'){
+            console.log('api request');
             API.parts = url.split('/');
             return true;
         }
