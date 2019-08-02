@@ -42,9 +42,22 @@ http.createServer((request, response)=>{
     });
 }).listen(port,ip);
 
-fetch('http://127.0.0.1:3000/api/user/login', 
-{ method: 'post', 
+//test
+const payload = { method: 'post', 
 headers: {'Accept':'application/json'}, 
-body: JSON.stringify({username: 'boop', password: 'password'})})
+body: JSON.stringify({username: 'boop', password: 'password'})
+};
+
+fetch('http://127.0.0.1:3000/api/user/login', 
+payload)
 .then(promise=>promise.json()
-).then(content=> console.log("content:",content));
+).then(content=> {
+    console.log("content:",content)
+    if(content.success==true){
+        return fetch("http://127.0.0.1:3000/api/session/create", payload)
+    }
+    throw content.message;
+}).then(promise=>promise.json()
+).then(json=> console.log(json)
+).catch((error) => { console.log("err:", error) });
+

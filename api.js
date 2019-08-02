@@ -63,6 +63,36 @@ function action_user_login(request, payload){
         });
     }).catch((error) => { console.log("err:", error) });
 };
+
+function action_session_create(request, payload){
+    function createAuthToken(){
+        const token = md5((new Date).getTime().toString());
+        return token;
+    }
+    return new Promise((resolve, reject)=>{
+        if (!payload) reject("oops, no payload");
+        let q = `select * from session where username = '${payload.username}'`;
+        database.connection.query(q, (error, results)=> {
+            if(error) throw error;
+            
+            if(results[0]) {
+                resolve({'token': results[0].token, 'message': "session found"});
+            } else {
+                const token = createAuthToken();
+                console.log("token: ",token);
+                const fields = `( username, token)`;
+                const values = `('${payload.username}', '${token}')`;
+                q = `insert into session ${fields} values ${values}`;
+                console.log("q: ",q);
+                database.connection.query(q, (error, results)=>{
+                    if(error) throw error;
+                    resolve({'token': token, 'message': "session created"});
+                });
+            }
+        });
+    }).catch((error) => { console.log("err:", error) });
+};
+
 function respond(response, content){
     const jsontype = "{ 'Content-Type': 'application/json' }";
     content = JSON.stringify(content);
@@ -95,6 +125,12 @@ class API {
                 .then(content => {
                     respond(response, content)
                 });
+            }
+            if (identify('session', 'create')){
+                action_session_create(request, payload)
+                .then(content => {
+                    respond(response, content)
+                })
             }
         });
     };
