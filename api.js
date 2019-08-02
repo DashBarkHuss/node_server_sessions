@@ -34,7 +34,6 @@ function action_user_register(request, payload){
                 const fields = `(username, password_md5)`;
                 const values = `('${payload.username}', '${password_md5}')`;
                 q = `insert into user ${fields} values ${values}`
-                console.log(37, q);
                 database.connection.query(q, (error, results)=>{
                     if (error) throw error;
                     
@@ -53,7 +52,6 @@ function action_user_login(request, payload){
         database.connection.query(q, (error, results)=>{
             if (error) throw error; 
             if (results.length != 0){
-                console.log("password: ", payload.password);
                 if (md5(payload.password) == results[0].password_md5){
                     resolve({"success": true, 'message': `user "${results[0].username}" logged in`});
                 } else {
@@ -74,16 +72,13 @@ function action_session_create(request, payload){
         let q = `select * from session where username = '${payload.username}'`;
         database.connection.query(q, (error, results)=> {
             if(error) throw error;
-            
             if(results[0]) {
                 resolve({'token': results[0].token, 'message': "session found"});
             } else {
                 const token = createAuthToken();
-                console.log("token: ",token);
                 const fields = `( username, token)`;
                 const values = `('${payload.username}', '${token}')`;
                 q = `insert into session ${fields} values ${values}`;
-                console.log("q: ",q);
                 database.connection.query(q, (error, results)=>{
                     if(error) throw error;
                     resolve({'token': token, 'message': "session created"});
