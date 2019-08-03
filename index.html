@@ -13,20 +13,21 @@
         }
     }    
     const login = (payload) => {
-    fetch('http://127.0.0.1:3000/api/user/login', makePayload(payload)
-        ).then(promise=>promise.json()
-        ).then(content=> {
-            console.log("content:",content)
-            if(content.success==true){
-                return fetch("http://127.0.0.1:3000/api/session/create", payload)
-            }
-            throw content.message;
-        }).then(promise=>promise.json()
-        ).then(json=> {
-            console.log(json)
-            localStorage.setItem('token', json.token);
+        payload = makePayload(payload);
+        fetch('http://127.0.0.1:3000/api/user/login', payload
+            ).then(promise=>promise.json()
+            ).then(content=> {
+                console.log("content:",content)
+                if(content.success==true){
+                    return fetch("http://127.0.0.1:3000/api/session/create", payload)
+                }
+                throw content.message;
+            }).then(promise=>promise.json()
+            ).then(json=> {
+                console.log(json)
+                localStorage.setItem('token', json.token);
 
-        }).catch((error) => { console.log("err:", error) });
+            }).catch((error) => { console.log("err:", error) });
     }
     </script>
 </head>
@@ -34,9 +35,7 @@
     <h2>Login</h2>
     <input type="text" id = "username"></input>
     <input type="password" id = "password"></input>
-    <input type="button" value="Login"></input>
-    <br><br>
-    <input type="button" value="fetch test" 
+    <input type="button" value="Login" 
     onclick="login({'username':window.username.value, 'password': window.password.value})" >
     </input>
 </body>

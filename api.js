@@ -53,7 +53,7 @@ function action_user_login(request, payload){
             if (error) throw error; 
             if (results.length != 0){
                 if (md5(payload.password) == results[0].password_md5){
-                    resolve({"success": true, 'message': `user "${results[0].username}" logged in`});
+                    resolve({"success": true, 'message': `user "${results[0].username}" and password match.`});
                 } else {
                     resolve({'success':false, 'message': `incorrect password or username.`});
                 }
