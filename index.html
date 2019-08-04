@@ -29,6 +29,9 @@
 
             }).catch((error) => { console.log("err:", error) });
     }
+    const logout = (payload) => {
+        localStorage.removeItem('token');
+    }
     </script>
 </head>
 <body>
@@ -38,5 +41,8 @@
     <input type="button" value="Login" 
     onclick="login({'username':window.username.value, 'password': window.password.value})" >
     </input>
+
+    <br>
+    <input type="button" value="Logout" onclick="logout()"></input>
 </body>
 </html>

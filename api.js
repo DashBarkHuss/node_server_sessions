@@ -69,15 +69,15 @@ function action_session_create(request, payload){
     }
     return new Promise((resolve, reject)=>{
         if (!payload) reject("oops, no payload");
-        let q = `select * from session where username = '${payload.username}'`;
+        let q = `select * from session where username = '${payload.username}' AND ip = '${request.connection.remoteAddress}' AND useragent = '${request.headers['user-agent']}'` ;
         database.connection.query(q, (error, results)=> {
             if(error) throw error;
             if(results[0]) {
                 resolve({'token': results[0].token, 'message': "session found"});
             } else {
                 const token = createAuthToken();
-                const fields = `( username, token)`;
-                const values = `('${payload.username}', '${token}')`;
+                const fields = `( username, token, ip, useragent)`;
+                const values = `('${payload.username}', '${token}', '${request.connection.remoteAddress}', '${request.headers['user-agent']}')`;
                 q = `insert into session ${fields} values ${values}`;
                 database.connection.query(q, (error, results)=>{
                     if(error) throw error;
