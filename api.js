@@ -139,6 +139,12 @@ class API {
             if (identify('user', 'register')){
                 action_user_register(request, payload)
                 .then(content => {
+                    if(content.success == true){
+                        return action_session_create(request, payload);
+                    }
+                    return content
+                })
+                .then(content => {
                     respond(response, content)
                 });
             }
