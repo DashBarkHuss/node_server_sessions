@@ -98,7 +98,11 @@ function action_session_get(request, payload){
             database.connection.query(q, (error, results) => {
                 if (error) throw error;
                 console.log("res:", results);
-                resolve({userLoggedIn: true, user: results[0].username});
+                if(results.length === 0){
+                    resolve({userLoggedIn: false, message: 'No user logged in'});
+                } else {
+                    resolve({userLoggedIn: true, user: results[0].username});
+                }
             });
         }
     }).catch((error) => { console.log("err:", error) });;
