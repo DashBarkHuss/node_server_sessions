@@ -127,6 +127,12 @@ class API {
             request.chunks.length>0? payload = JSON.parse(Buffer.concat(request.chunks).toString()) : null;
             if (identify('user', 'login')){
                 action_user_login(request, payload )
+                .then(content => {
+                    if(content.success == true){
+                        return action_session_create(request, payload);
+                    }
+                    return content
+                })
                 .then(content=>{
                     respond(response, content)});
             }
@@ -136,12 +142,7 @@ class API {
                     respond(response, content)
                 });
             }
-            if (identify('session', 'create')){
-                action_session_create(request, payload)
-                .then(content => {
-                    respond(response, content)
-                })
-            }
+
             if (identify('user', 'logout')){
                 action_user_logout(request)
                 .then(content => {

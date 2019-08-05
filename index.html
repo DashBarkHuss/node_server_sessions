@@ -22,18 +22,10 @@
         payload = makePayload(payload);
         fetch('api/user/login', payload
             ).then(promise=>promise.json()
-            ).then(content=> {
-                console.log("content:",content)
-                if(content.success==true){
-                    return fetch("api/session/create", payload)
-                }
-                throw content.message;
-            }).then(promise=>promise.json()
             ).then(json=> {
-                console.log(json)
+                console.log("json: ", json)
                 localStorage.setItem('token', json.token);
-
-            }).catch((error) => { console.log("err:", error) });
+            }).catch((error) => { console.log("err29:", error) });
     }
     const logout = () => {
         fetch('api/user/logout'
