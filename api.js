@@ -88,6 +88,22 @@ function action_session_create(request, payload){
     }).catch((error) => { console.log("err:", error) });
 };
 
+function action_session_get(request, payload){
+    return new Promise((resolve,reject)=>{
+        if(!payload) reject("oops no payload");
+        if(!payload.token) {
+            resolve({userLoggedIn: false, message: 'No user logged in'});
+        } else {
+            let q = `select * from session where token = '${payload.token}'`;
+            database.connection.query(q, (error, results) => {
+                if (error) throw error;
+                console.log("res:", results);
+                resolve({userLoggedIn: true, user: results[0].username});
+            });
+        }
+    }).catch((error) => { console.log("err:", error) });;
+}
+
 function action_user_logout(request){
     console.log("logout");
     return new Promise((resolve,reject)=>{
@@ -127,7 +143,7 @@ class API {
             request.chunks.length>0? payload = JSON.parse(Buffer.concat(request.chunks).toString()) : null;
             if (identify('user', 'login')){
                 action_user_login(request, payload )
-                .then(content => {
+                .then(content => { //not dry 1
                     if(content.success == true){
                         return action_session_create(request, payload);
                     }
@@ -138,7 +154,7 @@ class API {
             }
             if (identify('user', 'register')){
                 action_user_register(request, payload)
-                .then(content => {
+                .then(content => { //not dry 1
                     if(content.success == true){
                         return action_session_create(request, payload);
                     }
@@ -154,6 +170,12 @@ class API {
                 .then(content => {
                     respond(response, content)
                 })
+            }
+            if (identify('session', 'get')){
+                action_session_get(request, payload)
+                .then(content => {
+                    respond(response,content)
+                });
             }
         });
     };

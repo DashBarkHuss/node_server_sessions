@@ -35,6 +35,13 @@
             localStorage.removeItem('token');
         })
     }
+    const getSession = (payload)=>{
+        payload = makePayload(payload);
+        console.log(payload);
+        fetch('api/session/get', payload)
+        .then(promise=>promise.json())
+        .then(content => console.log(content));
+    }
     </script>
 </head>
 <body>
@@ -48,6 +55,10 @@
     <input type="button" value="Login" 
     onclick="login({'username':window.username.value, 'password': window.password.value})" >
     </input>
+
+    <h2>Logged In:</h2>
+    <input type="button" value="Check Who's Logged In" onclick="getSession({'token': localStorage.getItem('token')})"></input>
+    <div id="LoggedInUserName"></div>
 
     <br>
     <input type="button" value="Logout" onclick="logout()"></input>
