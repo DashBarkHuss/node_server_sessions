@@ -14,7 +14,7 @@
     }    
     const login = (payload) => {
         payload = makePayload(payload);
-        fetch('http://127.0.0.1:3000/api/user/login', payload
+        fetch('api/user/login', payload
             ).then(promise=>promise.json()
             ).then(content=> {
                 console.log("content:",content)
@@ -29,8 +29,13 @@
 
             }).catch((error) => { console.log("err:", error) });
     }
-    const logout = (payload) => {
-        localStorage.removeItem('token');
+    const logout = () => {
+        fetch('api/user/logout'
+        ).then(promise=>promise.json()
+        ).then(content => {
+            console.log("content:",content);
+            localStorage.removeItem('token');
+        })
     }
     </script>
 </head>

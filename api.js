@@ -88,6 +88,20 @@ function action_session_create(request, payload){
     }).catch((error) => { console.log("err:", error) });
 };
 
+function action_user_logout(request){
+    console.log("logout");
+    return new Promise((resolve,reject)=>{
+        if(!request) throw "oops";
+        const q = `Delete from session where ip = '${request.connection.remoteAddress}' AND useragent='${request.headers['user-agent']}'`;
+        console.log(q);
+        database.connection.query(q, (error, results)=>{
+            if (error) throw error;
+            console.log("res: ", results);
+            resolve({success: true, message: "user logged out"})
+        })
+    }).catch((error) => { console.log("err:", error) });
+}
+
 function respond(response, content){
     const jsontype = "{ 'Content-Type': 'application/json' }";
     content = JSON.stringify(content);
@@ -109,7 +123,8 @@ class API {
         });
         request.on('end', ()=>{
             console.log("API.parts: ", API.parts);
-            const payload = JSON.parse(Buffer.concat(request.chunks).toString());
+            let payload;
+            request.chunks.length>0? payload = JSON.parse(Buffer.concat(request.chunks).toString()) : null;
             if (identify('user', 'login')){
                 action_user_login(request, payload )
                 .then(content=>{
@@ -123,6 +138,12 @@ class API {
             }
             if (identify('session', 'create')){
                 action_session_create(request, payload)
+                .then(content => {
+                    respond(response, content)
+                })
+            }
+            if (identify('user', 'logout')){
+                action_user_logout(request)
                 .then(content => {
                     respond(response, content)
                 })
