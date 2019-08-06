@@ -24,7 +24,7 @@
             ).then(promise=>promise.json()
             ).then(json=> {
                 console.log("json: ", json)
-                localStorage.setItem('token', json.token);
+                if (json.success) localStorage.setItem('token', json.token);
             }).catch((error) => { console.log("err29:", error) });
     }
     const logout = () => {
@@ -48,12 +48,12 @@
     <h2>Register</h2>
     <input type= "text" id="regusername"></input>
     <input type="password" id="regpassword"></input>
-    <input type="button" value="Register" onclick="register({'username':window.regusername.value, 'password':window.regpassword.value})"></input>
+    <input type="button" value="Register" onclick="register({'username':window.regusername.value, 'password':window.regpassword.value, 'token': localStorage.getItem('token')})"></input>
     <h2>Login</h2>
     <input type="text" id = "username"></input>
     <input type="password" id = "password"></input>
     <input type="button" value="Login" 
-    onclick="login({'username':window.username.value, 'password': window.password.value})" >
+    onclick="login({'username':window.username.value, 'password': window.password.value, 'token': localStorage.getItem('token')})" >
     </input>
 
     <h2>Logged In:</h2>

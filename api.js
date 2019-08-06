@@ -73,7 +73,7 @@ function action_session_create(request, payload){
         database.connection.query(q, (error, results)=> {
             if(error) throw error;
             if(results[0]) {
-                resolve({'token': results[0].token, 'message': "session found"});
+                resolve({'success': true, 'token': results[0].token, 'message': "session found"});
             } else {
                 const token = createAuthToken();
                 const fields = `( username, token, ip, useragent)`;
@@ -81,7 +81,7 @@ function action_session_create(request, payload){
                 q = `insert into session ${fields} values ${values}`;
                 database.connection.query(q, (error, results)=>{
                     if(error) throw error;
-                    resolve({'token': token, 'message': "session created"});
+                    resolve({'success': true, 'token': token, 'message': "session created"});
                 });
             }
         });
@@ -97,7 +97,6 @@ function action_session_get(request, payload){
             let q = `select * from session where token = '${payload.token}'`;
             database.connection.query(q, (error, results) => {
                 if (error) throw error;
-                console.log("res:", results);
                 if(results.length === 0){
                     resolve({userLoggedIn: false, message: 'No user logged in'});
                 } else {
@@ -146,8 +145,19 @@ class API {
             let payload;
             request.chunks.length>0? payload = JSON.parse(Buffer.concat(request.chunks).toString()) : null;
             if (identify('user', 'login')){
+                if(payload.token){//check if already logged in
+                    action_session_get(request, payload).
+                    then(content => {
+                        console.log("153: ",content)
+                        if(content.userLoggedIn){
+                            respond(response, {success: false, message:`user ${content.user} already logged in`});
+                            return;
+                        }
+                    });
+                };
                 action_user_login(request, payload )
                 .then(content => { //not dry 1
+                    console.log(payload);
                     if(content.success == true){
                         return action_session_create(request, payload);
                     }
