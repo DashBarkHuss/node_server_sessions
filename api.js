@@ -150,7 +150,7 @@ class API {
                     then(content => {
                         console.log("153: ",content)
                         if(content.userLoggedIn){
-                            respond(response, {success: false, message:`user ${content.user} already logged in`});
+                            respond(response, {success: false, message:`You can't login. User ${content.user} already logged in. Log out first.`});
                             return;
                         }
                     });

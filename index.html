@@ -24,7 +24,10 @@
             ).then(promise=>promise.json()
             ).then(json=> {
                 console.log("json: ", json)
-                if (json.success) localStorage.setItem('token', json.token);
+                if (json.success) {
+                    localStorage.setItem('token', json.token);
+                    document.location.reload();
+                }
             }).catch((error) => { console.log("err29:", error) });
     }
     const logout = () => {
@@ -33,34 +36,47 @@
         ).then(content => {
             console.log("content:",content);
             localStorage.removeItem('token');
+            document.location.reload();
         })
     }
     const getSession = (payload)=>{
         payload = makePayload(payload);
-        console.log(payload);
-        fetch('api/session/get', payload)
+        return fetch('api/session/get', payload)
         .then(promise=>promise.json())
-        .then(content => console.log(content));
+        .then(content => {
+            console.log("cont: ", content);
+            return content});
     }
     </script>
 </head>
 <body>
-    <h2>Register</h2>
-    <input type= "text" id="regusername"></input>
-    <input type="password" id="regpassword"></input>
-    <input type="button" value="Register" onclick="register({'username':window.regusername.value, 'password':window.regpassword.value, 'token': localStorage.getItem('token')})"></input>
-    <h2>Login</h2>
-    <input type="text" id = "username"></input>
-    <input type="password" id = "password"></input>
-    <input type="button" value="Login" 
-    onclick="login({'username':window.username.value, 'password': window.password.value, 'token': localStorage.getItem('token')})" >
-    </input>
+    
+    <script>
+    const loggedOutHTML = `<h2>Register</h2>
+        <input type= "text" id="regusername"></input>
+        <input type="password" id="regpassword"></input>
+        <input type="button" value="Register" onclick="register({'username':window.regusername.value, 'password':window.regpassword.value, 'token': localStorage.getItem('token')})"></input>
+        <h2>Login</h2>
+        <input type="text" id = "username"></input>
+        <input type="password" id = "password"></input>
+        <input type="button" value="Login" 
+        onclick="login({'username':window.username.value, 'password': window.password.value, 'token': localStorage.getItem('token')})" >
+        </input>`
+    getSession({'token': localStorage.getItem('token')})
+        .then(content=>{
+            if(content.userLoggedIn){ 
+                const div = document.createElement("div");
+                div.id = "LoggedInUserName";
+                div.innerHTML = content.user;
+                const logout = document.querySelector('[value = "Logout"]');
+                document.body.appendChild(div, logout);
+                document.body.innerHTML += `<input type="button" value="Logout" onclick="logout()"></input>`
 
-    <h2>Logged In:</h2>
-    <input type="button" value="Check Who's Logged In" onclick="getSession({'token': localStorage.getItem('token')})"></input>
-    <div id="LoggedInUserName"></div>
 
-    <br>
-    <input type="button" value="Logout" onclick="logout()"></input>
+            } else {
+                document.body.innerHTML += loggedOutHTML;
+            }
+        });
+    </script>
 </body>
 </html>
