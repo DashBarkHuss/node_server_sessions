@@ -8,17 +8,20 @@ var transporter = nodemailer.createTransport({
   }
 });
 
-var mailOptions = {
-  from: process.env.GMAIL,
-  to: process.env.GMAIL2,
-  subject: 'test2',
-  text: 'That was easy!',
-};
+function email(receiver, subject, msg){
+    var mailOptions = {
+      from: process.env.GMAIL,
+      to: receiver,
+      subject: subject,
+      text: msg,
+    };
+    transporter.sendMail(mailOptions, function(error, info){
+    if (error) {
+        console.log(error);
+    } else {
+        console.log('Email sent: ' + info.response);
+    }
+    });
+}
 
-transporter.sendMail(mailOptions, function(error, info){
-  if (error) {
-    console.log(error);
-  } else {
-    console.log('Email sent: ' + info.response);
-  }
-});
+module.exports = email;
