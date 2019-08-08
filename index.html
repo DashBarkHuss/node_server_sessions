@@ -16,7 +16,13 @@
         payload = makePayload(payload);
         fetch('api/user/register', payload
             ).then(promise=>promise.json()
-            ).then(content=>console.log(content))
+            ).then(content=>{
+                console.log(content)
+                if (content.success) {
+                    localStorage.setItem('token', content.token);
+                    document.location.reload();
+                }
+            });
     }
     const login = (payload) => {
         payload = makePayload(payload);

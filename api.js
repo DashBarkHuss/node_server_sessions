@@ -43,6 +43,34 @@ function action_user_register(request, payload){
         });
     });
 };
+function action_send_verification(){
+
+}
+function action_user_verify(){
+    return new Promise((resolve,reject)=>{
+        if(!API.parts[3] || API.parts[3]==='' || !API.parts[4] || API.parts[3]==='' ) resolve({success: false, message: "No verification token or no username"})
+        let q = `select * from user where username ='${API.parts[4]}'`;
+        database.connection.query(q, (error, results)=>{
+            if(error) throw error;
+            console.log("res", results);
+            if(results[0].isVerified){
+                resolve({success: false, message: `username ${API.parts[4]} already verified`});
+            } else {
+                q = `update user set isVerified = 1 where username ='${API.parts[4]}' AND verificationToken = '${API.parts[3]}'`
+                database.connection.query(q, (error, results)=>{
+                    console.log(61);
+                    console.log("res: ", results);
+                    if(error) throw error;
+                    if(results.changedRows != 0){
+                        resolve({success: true, message:`${API.parts[4]} verified.`})
+                    } else {
+                        resolve({success: false, message:`${API.parts[4]} and token don't match.`})
+                    }
+                })
+            }
+        })
+    });
+}
 function action_user_login(request, payload){
     return new Promise((resolve, reject)=>{
         if (!payload){
@@ -144,6 +172,7 @@ class API {
             console.log("API.parts: ", API.parts);
             let payload;
             request.chunks.length>0? payload = JSON.parse(Buffer.concat(request.chunks).toString()) : null;
+
             if (identify('user', 'login')){
                 if(payload.token){//check if already logged in
                     action_session_get(request, payload).
@@ -166,7 +195,7 @@ class API {
                 .then(content=>{
                     respond(response, content)});
             }
-            if (identify('user', 'register')){
+            if (identify('user', 'register')){ // should also log user in
                 action_user_register(request, payload)
                 .then(content => { //not dry 1
                     if(content.success == true){
@@ -190,6 +219,10 @@ class API {
                 .then(content => {
                     respond(response,content)
                 });
+            }
+            if (identify('user', 'verify')){
+                action_user_verify()
+                .then(content=> respond(response,content));
             }
         });
     };
