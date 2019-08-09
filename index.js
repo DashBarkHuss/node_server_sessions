@@ -43,17 +43,17 @@ http.createServer((request, response)=>{
 }).listen(port,ip);
 
 //test
-// const payload = { method: 'post', 
-// headers: {'Accept':'application/json'}, 
-// body: JSON.stringify({username: 'boop', password: 'password'})
-// };
+const payload = { method: 'post', 
+headers: {'Accept':'application/json'}, 
+body: JSON.stringify({email: process.env.GMAIL2, username: 'bloop', password: 'password'})
+};
 
-// fetch('http://127.0.0.1:3000/api/user/login', 
-// payload)
-// .then(promise=>promise.json()
-// ).then(json=> {
-//     console.log("json: ", json)
+fetch('http://127.0.0.1:3000/api/user/register', 
+payload)
+.then(promise=>promise.json()
+).then(json=> {
+    console.log("json: ", json)
 
-// }).catch((error) => { console.log("err59:", error) });
+}).catch((error) => { console.log("err59:", error) });
 
 

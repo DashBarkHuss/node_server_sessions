@@ -1,5 +1,6 @@
 const mysql = require('mysql');
 const md5 = require('md5');
+const email = require('./sendEmail');
 
 class database {
     constructor(){};
@@ -36,8 +37,8 @@ function action_user_register(request, payload){
             } else {
                 const password_md5 = md5(payload.password);
                 const token = createAuthToken();
-                const fields = `(username, password_md5, verificationToken)`;
-                const values = `('${payload.username}', '${password_md5}', '${token}' )`;
+                const fields = `(username, password_md5, verificationToken, email)`;
+                const values = `('${payload.username}', '${password_md5}', '${token}', '${payload.email}' )`;
                 q = `insert into user ${fields} values ${values}`
                 database.connection.query(q, (error, results)=>{
                     if (error) throw error;
@@ -48,9 +49,23 @@ function action_user_register(request, payload){
         });
     });
 };
-function action_send_verification(){
-
-}
+function action_send_verification(userEmail, username){
+    const q = `select * from user where username = '${username}'`;
+    let token;
+    database.connection.query(q, (error,results)=>{
+        if (error) throw error;
+        console.log("res: ", results);
+        if(results[0].isVerified){
+            resolve({success:false, message:'No email sent. This account is already verified.'});
+        } else {
+            token = results[0].verificationToken;
+            const url = `http://127.0.0.1:3000/api/user/verify/${token}/${username}`;
+            const msg = `Verify your account: ${url}`;
+            email(userEmail, "Verify Your Account", msg);
+            console.log('msg: ', msg, userEmail);
+        };
+    });
+};
 function action_user_verify(){
     return new Promise((resolve,reject)=>{
         if(!API.parts[3] || API.parts[3]==='' || !API.parts[4] || API.parts[3]==='' ) resolve({success: false, message: "No verification token or no username"})
@@ -203,6 +218,7 @@ class API {
             if (identify('user', 'register')){ // should also log user in
                 action_user_register(request, payload)
                 .then(content => { //not dry 1
+                    action_send_verification(payload.email, payload.username);
                     if(content.success == true){
                         return action_session_create(request, payload);
                     }

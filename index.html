@@ -59,9 +59,10 @@
     
     <script>
     const loggedOutHTML = `<h2>Register</h2>
-        <input type= "text" id="regusername"></input>
-        <input type="password" id="regpassword"></input>
-        <input type="button" value="Register" onclick="register({'username':window.regusername.value, 'password':window.regpassword.value, 'token': localStorage.getItem('token')})"></input>
+        Usename:<input type= "text" id="regusername"></input>
+        Email:<input type= "text" id="regemail"></input>
+        Password:<input type="password" id="regpassword"></input>
+        <input type="button" value="Register" onclick="register({'email':window.regemail.value, 'username':window.regusername.value, 'password':window.regpassword.value, 'token': localStorage.getItem('token')})"></input>
         <h2>Login</h2>
         <input type="text" id = "username"></input>
         <input type="password" id = "password"></input>
