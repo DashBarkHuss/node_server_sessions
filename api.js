@@ -54,15 +54,13 @@ function action_send_verification(userEmail, username){
     let token;
     database.connection.query(q, (error,results)=>{
         if (error) throw error;
-        console.log("res: ", results);
         if(results[0].isVerified){
             resolve({success:false, message:'No email sent. This account is already verified.'});
         } else {
             token = results[0].verificationToken;
-            const url = `http://127.0.0.1:3000/api/user/verify/${token}/${username}`;
+            const url = `http://127.0.0.1:3000/api/user/verify/${token}/${username}`; //replace 127.0.0.1:3000 with domain or where ever your hosting
             const msg = `Verify your account: ${url}`;
             email(userEmail, "Verify Your Account", msg);
-            console.log('msg: ', msg, userEmail);
         };
     });
 };
@@ -72,14 +70,11 @@ function action_user_verify(){
         let q = `select * from user where username ='${API.parts[4]}'`;
         database.connection.query(q, (error, results)=>{
             if(error) throw error;
-            console.log("res", results);
             if(results[0].isVerified){
                 resolve({success: false, message: `username ${API.parts[4]} already verified`});
             } else {
                 q = `update user set isVerified = 1 where username ='${API.parts[4]}' AND verificationToken = '${API.parts[3]}'`
                 database.connection.query(q, (error, results)=>{
-                    console.log(61);
-                    console.log("res: ", results);
                     if(error) throw error;
                     if(results.changedRows != 0){
                         resolve({success: true, message:`${API.parts[4]} verified.`})
@@ -156,14 +151,11 @@ function action_session_get(request, payload){
 }
 
 function action_user_logout(request){
-    console.log("logout");
     return new Promise((resolve,reject)=>{
         if(!request) throw "oops";
         const q = `Delete from session where ip = '${request.connection.remoteAddress}' AND useragent='${request.headers['user-agent']}'`;
-        console.log(q);
         database.connection.query(q, (error, results)=>{
             if (error) throw error;
-            console.log("res: ", results);
             resolve({success: true, message: "user logged out"})
         })
     }).catch((error) => { console.log("err:", error) });
@@ -197,7 +189,6 @@ class API {
                 if(payload.token){//check if already logged in
                     action_session_get(request, payload).
                     then(content => {
-                        console.log("153: ",content)
                         if(content.userLoggedIn){
                             respond(response, {success: false, message:`You can't login. User ${content.user} already logged in. Log out first.`});
                             return;
@@ -206,7 +197,6 @@ class API {
                 };
                 action_user_login(request, payload )
                 .then(content => { //not dry 1
-                    console.log(payload);
                     if(content.success == true){
                         return action_session_create(request, payload);
                     }
