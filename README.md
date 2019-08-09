@@ -1,6 +1,10 @@
 This is a vanilla node server app that uses mysql as the database. It demonstrates how to register and verify users, log in, and log out. 
 
-I'm a beginner so this project likely doesn't demonstrate best practices.
+It has a simple, not cute UI, for demonstration purposes:
+
+![](doc_imgs/UI_8-9.19.png)
+
+I'm a beginner so this project likely excludes some best practices.
 
 This app is for demonstration/learning purposes. It's not complete. It will work to create users and log them in and out.
 
