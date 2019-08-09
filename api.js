@@ -20,6 +20,10 @@ class database {
 }
 
 function action_user_register(request, payload){
+    function createAuthToken(){ //dry 2
+        const token = md5((new Date).getTime().toString());
+        return token;
+    }
     return new Promise((resolve, reject)=>{
         if (!payload){
             reject('Oops no payload')
@@ -31,8 +35,9 @@ function action_user_register(request, payload){
             resolve({'success':false, 'message': 'user ' + payload.username + " already exists"});
             } else {
                 const password_md5 = md5(payload.password);
-                const fields = `(username, password_md5)`;
-                const values = `('${payload.username}', '${password_md5}')`;
+                const token = createAuthToken();
+                const fields = `(username, password_md5, verificationToken)`;
+                const values = `('${payload.username}', '${password_md5}', '${token}' )`;
                 q = `insert into user ${fields} values ${values}`
                 database.connection.query(q, (error, results)=>{
                     if (error) throw error;
@@ -91,7 +96,7 @@ function action_user_login(request, payload){
 };
 
 function action_session_create(request, payload){
-    function createAuthToken(){
+    function createAuthToken(){ //dry 2
         const token = md5((new Date).getTime().toString());
         return token;
     }
